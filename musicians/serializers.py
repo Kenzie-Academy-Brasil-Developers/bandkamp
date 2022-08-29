@@ -1,3 +1,5 @@
+from django.shortcuts import get_object_or_404
+from albums.models import Album
 from albums.serializers import AlbumSerializer
 from rest_framework import serializers
 
@@ -21,3 +23,14 @@ class MusicianSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+
+class MusicianAlbumSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Album
+        fields = ["id", "name", "musician_id"]
+
+    def create(self, validated_data):
+        musician = get_object_or_404(Musician, pk=validated_data["musician_id"])
+        
+        return Album.objects.create(**validated_data, musician=musician)

@@ -3,7 +3,7 @@ from rest_framework import serializers
 from .models import Album
 
 
-class AlbumSerializer(serializers.Serializer):
+class AlbumSerializer(serializers.ModelSerializer):
     class Meta:
         model = Album
         fields = ["id", "name", "musician_id"]
