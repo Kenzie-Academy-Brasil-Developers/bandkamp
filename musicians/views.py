@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django_filters import rest_framework as filters
 
 from bandkamp.pages import CustomPageNumberPagination
 
@@ -7,11 +8,11 @@ from albums.serializers import AlbumSerializer
 from songs.models import Song
 from songs.serializers import SongSerializer
 
-from rest_framework.pagination import PageNumberPagination
 from rest_framework import generics
 
 from .models import Musician
 from .serializers import MusicianSerializer
+from .filters import SongFilter
 
 class MusicianView(generics.ListCreateAPIView):
     queryset = Musician.objects.all()
@@ -40,7 +41,11 @@ class MusicianAlbumView(generics.ListCreateAPIView):
 class MusicianAlbumSongView(generics.ListCreateAPIView):
     queryset = Song.objects.all()
     serializer_class = SongSerializer
+
     pagination_class = CustomPageNumberPagination
+
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = SongFilter
 
 
     def perform_create(self, serializer):
