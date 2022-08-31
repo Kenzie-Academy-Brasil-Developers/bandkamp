@@ -17,17 +17,40 @@ import dotenv
 dotenv.load_dotenv()
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-DATABASES = {
-  "default": {
-      # O django já contém a instrução para rodar o motor psycopg2 do postgres
-      "ENGINE": "django.db.backends.postgresql",
-      "NAME": os.getenv("POSTGRES_DB"),
-      "USER": os.getenv("POSTGRES_USER"),
-      "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
-      "HOST": "127.0.0.1",
-      "PORT": 5432,
-  }
-}
+if os.getenv("GITHUB_WORKFLOW"):
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": "github-actions",
+            "USER": "postgres",
+            "PASSWORD": "postgres",
+            "HOST": "localhost",
+            "PORT": "5432",
+        }
+    }
+    SECRET_KEY = os.getenv("SECRET_KEY")
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("POSTGRES_DB"),
+            "USER": os.getenv("POSTGRES_USER"),
+            "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
+            "HOST": "127.0.0.1",
+            "PORT": 5432,
+        }
+    }
+
+
+import dj_database_url
+
+DATABASE_URL = os.environ.get('DATABASE_URL')
+
+if DATABASE_URL:
+    db_from_env = dj_database_url.config(
+        default=DATABASE_URL, conn_max_age=500, ssl_require=True)
+    DATABASES['default'].update(db_from_env)
+    DEBUG = False
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,9 +63,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-mk=3_%a%1r&5_!h)74mfury8x#-7r5=u6s15(5r=2%aeoz!-v)'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = []
+
+ALLOWED_HOSTS = ['bandkamp-api-iasmim.herokuapp.com', 'localhost']
 
 
 # Application definition
