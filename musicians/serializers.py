@@ -16,21 +16,4 @@ class MusicianSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         return Musician.objects.create(**validated_data)
 
-    def update(self, instance, validated_data):
-        for key, value in validated_data.items():
-            setattr(instance, key, value)
 
-        instance.save()
-
-        return instance
-
-
-class MusicianAlbumSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Album
-        fields = ["id", "name", "musician_id"]
-
-    def create(self, validated_data):
-        musician = get_object_or_404(Musician, pk=validated_data["musician_id"])
-        
-        return Album.objects.create(**validated_data, musician=musician)
